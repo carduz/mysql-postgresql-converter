@@ -113,7 +113,7 @@ def parse(input_filename, output_filename):
                 if type.startswith("tinyint("):
                     type = "int4"
                     set_sequence = True
-                    # final_type = "boolean"
+                    final_type = "boolean"
                 elif type.startswith("int("):
                     type = "integer"
                     set_sequence = True
@@ -128,7 +128,7 @@ def parse(input_filename, output_filename):
                     type = "text"
                 elif type.startswith("varchar("):
                     size = int(type.split("(")[1].rstrip(")"))
-                    type = "varchar(%s)" % (size)
+                    type = "varchar(%s)" % (size * 2)
                 elif type.startswith("smallint("):
                     type = "int2"
                     set_sequence = True
@@ -170,7 +170,7 @@ def parse(input_filename, output_filename):
                 foreign_key_lines.append("ALTER TABLE \"%s\" ADD CONSTRAINT %s DEFERRABLE INITIALLY DEFERRED" % (current_table, line.split("CONSTRAINT")[1].strip().rstrip(",")))
                 foreign_key_lines.append("CREATE INDEX ON \"%s\" %s" % (current_table, line.split("FOREIGN KEY")[1].split("REFERENCES")[0].strip().rstrip(",")))
             elif line.startswith("UNIQUE KEY"):
-                pass
+                creation_lines.append("UNIQUE (%s)" % line.split("(")[1].split(")")[0])
             elif line.startswith("FULLTEXT KEY"):
 
                 fulltext_keys = " || ' ' || ".join( line.split('(')[-1].split(')')[0].replace('"', '').split(',') )
